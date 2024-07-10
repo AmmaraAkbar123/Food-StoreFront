@@ -111,7 +111,7 @@ class DeliveryInfo extends StatelessWidget {
         Text(
           "Change",
           style: TextStyle(
-              fontSize: 12, color: MyColors.greyy, fontWeight: FontWeight.w700),
+              fontSize: 12, color: MyColors.grey, fontWeight: FontWeight.w700),
         )
       ],
     );

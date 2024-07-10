@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:foodstorefront/screens/splash_screen.dart';
 import 'package:foodstorefront/screens/store_screen.dart';
 
 void main() {
