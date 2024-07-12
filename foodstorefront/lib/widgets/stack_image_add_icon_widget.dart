@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/utils/colors.dart';
 
-class StackImagewithAddIcon extends StatelessWidget {
-  const StackImagewithAddIcon({
+class StackImagewithAddIconWidget extends StatelessWidget {
+  const StackImagewithAddIconWidget({
     super.key,
     required this.productImage,
   });
@@ -19,7 +19,7 @@ class StackImagewithAddIcon extends StatelessWidget {
             productImage,
             fit: BoxFit.cover,
             width: double.infinity,
-            height: 120,
+            height: 150,
           ),
         ),
         Positioned(

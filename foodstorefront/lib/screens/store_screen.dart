@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:foodstorefront/models/review_model.dart';
+import 'package:foodstorefront/provider/category_provider.dart';
+import 'package:foodstorefront/screens/favorite_screen.dart';
+import 'package:foodstorefront/screens/popular_deal_screen.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:foodstorefront/utils/images_strings.dart';
-import 'package:foodstorefront/widgets/store_product_container.dart';
-import 'package:foodstorefront/widgets/store_screen_widgets.dart';
+import 'package:foodstorefront/widgets/delivery_info_widget.dart';
+import 'package:foodstorefront/widgets/discount_offtag_widgets.dart';
+import 'package:foodstorefront/widgets/more_info_text_widget.dart';
+import 'package:foodstorefront/widgets/see_reviews_widget.dart';
 import 'package:foodstorefront/widgets/summer_deals_widget.dart';
+import 'package:provider/provider.dart';
 
 class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});
@@ -32,24 +39,23 @@ class _StoreScreenState extends State<StoreScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4, // Number of tabs, you can fetch this dynamically
+      length: context.read<CategoryProvider>().categories.length,
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           elevation: 0,
           iconTheme: const IconThemeData(color: MyColors.primary),
-          backgroundColor: Colors.white, // Ensure the background color is set
+          backgroundColor: MyColors.white,
           systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarBrightness: Brightness.light, // For iOS: (dark icons)
-            statusBarIconBrightness:
-                Brightness.dark, // For Android: (dark icons)
+            statusBarBrightness: Brightness.light,
+            statusBarIconBrightness: Brightness.dark,
             statusBarColor: Colors.white,
           ),
           title: _isAppBarExpanded
               ? Column(
                   children: [
                     const Text(
-                      "Delivery:",
+                      "Delivery",
                       style: TextStyle(
                           color: MyColors.textPrimary,
                           fontSize: 15,
@@ -75,87 +81,101 @@ class _StoreScreenState extends State<StoreScreen> {
             )
           ],
         ),
-        drawer: Drawer(), // Ensure only one drawer
-        body: NotificationListener<ScrollNotification>(
-          onNotification: (scrollNotification) {
-            if (scrollNotification is ScrollUpdateNotification) {
-              setState(() {
-                _isAppBarExpanded = scrollNotification.metrics.pixels > 200;
-              });
-            }
-            return true;
-          },
-          child: NestedScrollView(
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
-              return [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Row(
+        drawer: Drawer(),
+        body: Consumer<CategoryProvider>(
+          builder: (context, categoryProvider, child) {
+            return NotificationListener<ScrollNotification>(
+              onNotification: (scrollNotification) {
+                if (scrollNotification is ScrollUpdateNotification) {
+                  setState(() {
+                    _isAppBarExpanded = scrollNotification.metrics.pixels > 200;
+                  });
+                }
+                return true;
+              },
+              child: NestedScrollView(
+                headerSliverBuilder:
+                    (BuildContext context, bool innerBoxIsScrolled) {
+                  return [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.asset(
-                                ImagesStrings.optpLogo,
-                                height: 56,
-                                width: 55,
-                                fit: BoxFit.cover,
-                              ),
+                            Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.asset(
+                                    ImagesStrings.optpLogo,
+                                    height: 56,
+                                    width: 55,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(width: 15),
+                                const Text(
+                                  "OPTP - Johar Town",
+                                  style: TextStyle(
+                                      color: MyColors.textPrimary,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 15),
-                            const Text(
-                              "OPTP - Johar Town",
-                              style: TextStyle(
-                                  color: MyColors.textPrimary,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18),
-                            ),
+                            const SizedBox(height: 20),
+                            MoreInfo(),
+                            const SizedBox(height: 15),
+                            SeeReviews(),
+                            const SizedBox(height: 10),
+                            DeliveryInfo(),
+                            const SizedBox(height: 15),
+                            AvailableDeals(),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                        MoreInfo(),
-                        const SizedBox(height: 15),
-                        SeeReviews(),
-                        const SizedBox(height: 10),
-                        DeliveryInfo(),
-                        const SizedBox(height: 10),
-                        AvailableDeals(),
-                        const SizedBox(height: 10),
-                        DiscountOffTag(),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _SliverAppBarDelegate(
-                    TabBar(
-                      labelColor: MyColors.primary,
-                      unselectedLabelColor: Colors.grey,
-                      tabs: [
-                        Tab(text: "Popular"),
-                        Tab(text: "Summer Deals"),
-                        Tab(text: "Favourite Deal"),
-                        Tab(text: "New Arrivals"),
-                      ],
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _SliverAppBarDelegate(
+                        TabBar(
+                          labelStyle: TextStyle(
+                              fontWeight: FontWeight.w600, fontSize: 13),
+                          labelPadding: EdgeInsets.only(left: 3, right: 3),
+                          indicatorColor: MyColors.primary,
+                          labelColor: MyColors.primary,
+                          unselectedLabelColor: MyColors.textPrimary,
+                          tabs: categoryProvider.categories
+                              .map((category) => Tab(text: category.title))
+                              .toList(),
+                        ),
+                      ),
                     ),
-                  ),
+                  ];
+                },
+                body: TabBarView(
+                  children: categoryProvider.categories.map((category) {
+                    switch (category.id) {
+                      case '1':
+                        return PopularContentWidget(
+                            apiEndpoint: 'popular', title: 'Popular');
+                      case '2':
+                        return SummerDealsWidget();
+                      case '3':
+                        return FavoriteScreen(
+                          reviews: reviews,
+                        );
+                      case '4':
+                        return PopularContentWidget(
+                            apiEndpoint: 'new_arrivals', title: 'New Arrivals');
+                      default:
+                        return Center(child: Text('Unknown category'));
+                    }
+                  }).toList(),
                 ),
-              ];
-            },
-            body: TabBarView(
-              children: [
-                TabContentWidget(apiEndpoint: 'popular', title: 'Popular'),
-                SummerDealsWidget(),
-                SummerDealsWidget(),
-                TabContentWidget(
-                    apiEndpoint: 'new_arrivals', title: 'New Arrivals'),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
@@ -176,7 +196,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      color: Colors.white,
+      color: MyColors.white,
       child: _tabBar,
     );
   }
