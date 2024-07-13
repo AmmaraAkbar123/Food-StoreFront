@@ -57,7 +57,7 @@ class _StoreScreenState extends State<StoreScreen> {
                     const Text(
                       "Delivery",
                       style: TextStyle(
-                          color: MyColors.textPrimary,
+                          color: MyColors.black,
                           fontSize: 15,
                           fontWeight: FontWeight.w700),
                     ),
@@ -117,7 +117,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                 const Text(
                                   "OPTP - Johar Town",
                                   style: TextStyle(
-                                      color: MyColors.textPrimary,
+                                      color: MyColors.black,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18),
                                 ),
@@ -144,7 +144,7 @@ class _StoreScreenState extends State<StoreScreen> {
                           labelPadding: EdgeInsets.only(left: 3, right: 3),
                           indicatorColor: MyColors.primary,
                           labelColor: MyColors.primary,
-                          unselectedLabelColor: MyColors.textPrimary,
+                          unselectedLabelColor: MyColors.black,
                           tabs: categoryProvider.categories
                               .map((category) => Tab(text: category.title))
                               .toList(),

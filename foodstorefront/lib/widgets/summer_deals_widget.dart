@@ -11,7 +11,6 @@ class SummerDealsWidget extends StatefulWidget {
 
 class _SummerDealsWidgetState extends State<SummerDealsWidget> {
   late Future<List<Product>> _futureSummerProducts;
-  bool _isLoading = true;
   @override
   void initState() {
     super.initState();

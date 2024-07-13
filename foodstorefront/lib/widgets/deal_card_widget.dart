@@ -25,28 +25,28 @@ class DealCard extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    Text(
-                      'Rs. ${product.price}',
-                      style: const TextStyle(
-                          fontSize: 14, color: MyColors.primary),
-                    ),
-                    const SizedBox(width: 8),
                     if (product.oldPrice != null)
                       Text(
-                        'Rs. ${product.oldPrice}',
+                        'Rs. ${product.price}',
                         style: const TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey,
-                          decoration: TextDecoration.lineThrough,
-                        ),
+                            fontSize: 14, color: MyColors.primary),
                       ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Rs. ${product.oldPrice}',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey,
+                        decoration: TextDecoration.lineThrough,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 6),
                 Text(
                   product.description,
                   style: const TextStyle(
-                      fontSize: 11,
+                      fontSize: 12,
                       overflow: TextOverflow.clip,
                       color: MyColors.greyText),
                   maxLines: 2,

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:foodstorefront/utils/images_strings.dart';
 
 class Product {
@@ -26,11 +27,29 @@ class Product {
 }
 
 class ProductVariation {
+  final String title;
   final String name;
-  final double price;
+  final String ImagUrl;
+  final String price;
   final double oldPrice;
 
   ProductVariation({
+    required this.title,
+    required this.name,
+    required this.price,
+    required this.oldPrice,
+    required this.ImagUrl,
+  });
+}
+
+class FrequentlyBoughtTogether {
+  final String title;
+  final String name;
+  final String price;
+  final double oldPrice;
+
+  FrequentlyBoughtTogether({
+    required this.title,
     required this.name,
     required this.price,
     required this.oldPrice,
@@ -107,4 +126,64 @@ Future<List<Product>> fetchSummerDeals() async {
       frequentlyBoughtTogether: [],
     );
   });
+}
+
+//requently bought and variations data
+
+Future<Product> fetchProductDetails(String productId) async {
+  // Placeholder for API call
+  await Future.delayed(const Duration(seconds: 2));
+  return Product(
+    id: productId,
+    name: "Summer Deal 1",
+    imageUrl: ImagesStrings.burgerimage,
+    description: 'ShotGun Burger(Org/Hot)+Original Fries(Plain/Masala)',
+    price: 192.0,
+    oldPrice: 240.0,
+    variations: [
+      ProductVariation(
+          title: "Choose Your ShotGun Burger",
+          name: 'ShotGun Original',
+          price: "Free",
+          oldPrice: 240.0,
+          ImagUrl: ImagesStrings.burgerimage2),
+      ProductVariation(
+          name: 'ShotGun Hot',
+          price: "Free",
+          ImagUrl: ImagesStrings.burgerimage,
+          oldPrice: 480.0,
+          title: 'Choose Your Fries Flavour'),
+    ],
+    frequentlyBoughtTogether: [
+      Product(
+        id: '1',
+        name: 'Paratha',
+        imageUrl: ImagesStrings.burgerimage2,
+        price: 50.0,
+        description: 'Single/Double',
+        oldPrice: 66,
+        variations: [
+          ProductVariation(
+              name: 'Coca-Cola- 500 ml',
+              ImagUrl: ImagesStrings.burgerimage,
+              price: "+ Rs. 199.0",
+              oldPrice: 240.0,
+              title: 'Choose Your Pizza'),
+          ProductVariation(
+              name: 'Garlic Mayo',
+              price: "+ Rs. 120.0",
+              ImagUrl: ImagesStrings.burgerimage2,
+              oldPrice: 480.0,
+              title: 'Choose Your Type'),
+          ProductVariation(
+              name: "Coca-Cola- 1 Litre",
+              price: "+ Rs. 299.0",
+              ImagUrl: ImagesStrings.burgerimage,
+              oldPrice: 480.0,
+              title: 'Choose Your Type'),
+        ],
+        frequentlyBoughtTogether: [],
+      ),
+    ],
+  );
 }

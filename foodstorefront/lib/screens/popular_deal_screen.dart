@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodstorefront/models/product_model.dart';
+import 'package:foodstorefront/screens/product_detail/product_detail_page.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:foodstorefront/widgets/popular_container_widget.dart';
 
@@ -19,7 +20,6 @@ class PopularContentWidget extends StatefulWidget {
 
 class _PopularContentWidgetState extends State<PopularContentWidget> {
   late Future<List<Product>> _futureProducts;
-  bool _isLoading = true;
   @override
   void initState() {
     super.initState();
@@ -76,14 +76,14 @@ class _PopularContentWidgetState extends State<PopularContentWidget> {
                     itemCount: products.length,
                     itemBuilder: (context, index) {
                       return GestureDetector(
-                        // onTap: () => Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (context) => ProductDetailScreen(
-                        //       productId: products[index].id,
-                        //     ),
-                        //   ),
-                        // ),
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductDetailScreen(
+                              productId: products[index].id,
+                            ),
+                          ),
+                        ),
                         child: PopularContainerWidget(product: products[index]),
                       );
                     },
