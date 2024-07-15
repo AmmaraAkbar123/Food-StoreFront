@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:foodstorefront/provider/category_provider.dart';
+import 'package:foodstorefront/provider/radio_provider.dart';
+import 'package:foodstorefront/screens/splash_screen.dart';
 import 'package:foodstorefront/screens/store_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -16,15 +17,16 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
+        ChangeNotifierProvider(create: (_) => RadioProvider()),
       ],
       child: MaterialApp(
         theme: ThemeData(
-          appBarTheme: const AppBarTheme(
-            systemOverlayStyle: SystemUiOverlayStyle.light,
-          ),
-        ),
+            // appBarTheme: const AppBarTheme(
+            //   systemOverlayStyle: SystemUiOverlayStyle.light,
+            // ),
+            ),
         debugShowCheckedModeBanner: false,
-        home: const StoreScreen(),
+        home: const SplashScreen(),
       ),
     );
   }

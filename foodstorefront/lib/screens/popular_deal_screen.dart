@@ -20,6 +20,7 @@ class PopularContentWidget extends StatefulWidget {
 
 class _PopularContentWidgetState extends State<PopularContentWidget> {
   late Future<List<Product>> _futureProducts;
+
   @override
   void initState() {
     super.initState();
@@ -32,49 +33,64 @@ class _PopularContentWidgetState extends State<PopularContentWidget> {
       future: _futureProducts,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Center(child: Text('Error fetching data'));
+          return const Center(child: Text('Error fetching data'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return Center(child: Text('No data available'));
+          return const Center(child: Text('No data available'));
         } else {
           List<Product> products = snapshot.data!;
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.local_fire_department,
-                      color: MyColors.red,
-                    ),
-                    Text(
-                      widget.title,
-                      style: const TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+          return CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 20,
+                    left: 16,
+                    right: 16,
+                    bottom: 16,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.local_fire_department,
+                            color: MyColors.red,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            widget.title,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        "Most ordered right now",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      const SizedBox(height: 15),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 6),
-                const Text(
-                  "Most ordered right now",
-                  style: TextStyle(fontSize: 14),
-                ),
-                const SizedBox(height: 15),
-                Expanded(
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 5,
-                      crossAxisSpacing: 10,
-                      childAspectRatio: 0.78,
-                    ),
-                    itemCount: products.length,
-                    itemBuilder: (context, index) {
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 5,
+                    crossAxisSpacing: 10,
+                    childAspectRatio: 0.78,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
                       return GestureDetector(
                         onTap: () => Navigator.push(
                           context,
@@ -84,13 +100,16 @@ class _PopularContentWidgetState extends State<PopularContentWidget> {
                             ),
                           ),
                         ),
-                        child: PopularContainerWidget(product: products[index]),
+                        child: PopularContainerWidget(
+                          product: products[index],
+                        ),
                       );
                     },
+                    childCount: products.length,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           );
         }
       },

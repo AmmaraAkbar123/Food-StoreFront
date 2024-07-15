@@ -40,34 +40,34 @@ class _SpecialInstructionSectionState extends State<SpecialInstructionSection> {
         ),
         SizedBox(height: 20),
         Container(
-          height: 130,
+          height: 90,
           child: TextFormField(
             controller: _controller,
-            maxLines: null,
-            expands: true,
+            maxLines: 3, // Allows the field to expand up to 5 lines
+            textAlignVertical: TextAlignVertical.top, // Aligns text to the top
             decoration: InputDecoration(
               labelText: "e.g. no mayo",
               alignLabelWithHint: true,
-              labelStyle: TextStyle(color: MyColors.greyText, fontSize: 14),
+              labelStyle: TextStyle(color: MyColors.greyText, fontSize: 16),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               contentPadding:
                   EdgeInsets.symmetric(vertical: 16, horizontal: 12),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: MyColors.greyText,
+                  color: MyColors.grey2,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: MyColors.greyText,
+                  color: MyColors.lightGrey,
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8.0),
                 borderSide: BorderSide(
-                  color: MyColors.primary,
+                  color: MyColors.black,
                 ),
               ),
             ),
@@ -76,10 +76,10 @@ class _SpecialInstructionSectionState extends State<SpecialInstructionSection> {
             },
           ),
         ),
-        Align(
-          alignment: Alignment.centerRight,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 8.0),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Align(
+            alignment: Alignment.centerRight,
             child: Text(
               '${_controller.text.length}/$maxLength',
               style: TextStyle(fontSize: 12, color: MyColors.black87),

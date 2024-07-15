@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 
 class MyColors {
@@ -13,6 +11,7 @@ class MyColors {
   static const Color red = Colors.red;
   static const Color white = Colors.white;
   static const Color lightGrey = Color.fromARGB(255, 241, 239, 239);
+  static const Color grey2 = Color.fromARGB(255, 233, 230, 230);
 
 // Text colors
   static const Color black = Colors.black;

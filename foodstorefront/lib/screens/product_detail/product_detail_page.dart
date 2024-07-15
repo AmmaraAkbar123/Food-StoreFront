@@ -20,11 +20,20 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   late Future<Product> _productFuture;
   int _quantity = 1;
+  bool _isOptionSelected = false;
+  late FocusScopeNode _focusScopeNode;
 
   @override
   void initState() {
     super.initState();
     _productFuture = fetchProductDetails(widget.productId);
+    _focusScopeNode = FocusScopeNode();
+  }
+
+  @override
+  void dispose() {
+    _focusScopeNode.dispose();
+    super.dispose();
   }
 
   void _incrementQuantity() {
@@ -39,160 +48,205 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     });
   }
 
+  void _onSelectionChanged(bool isSelected) {
+    setState(() {
+      _isOptionSelected = isSelected;
+    });
+    _focusScopeNode.unfocus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder<Product>(
-        future: _productFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return const Center(child: Text('Error loading product details'));
-          } else if (snapshot.hasData) {
-            final product = snapshot.data!;
-            return CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  expandedHeight: 300.0,
-                  floating: false,
-                  flexibleSpace: FlexibleSpaceBar(
-                    background: Image.asset(
-                      product.imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Center(
-                          child: Icon(
-                            Icons.error,
-                            color: Colors.red,
-                            size: 50,
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  leading: CustomCancelButton(
-                    size: 50, // Adjust the size as needed
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ProductTitleSection(product: product),
-                        const SizedBox(height: 15),
-                        // Dynamically add SelectMenuSection widgets
-                        ...product.variations.map((variation) {
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 15),
-                            child: SelectMenuSection(
-                              product: product,
-                              variation: variation,
+      backgroundColor: MyColors.white,
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: FutureBuilder<Product>(
+          future: _productFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Center(child: Text('Error loading product details'));
+            } else if (snapshot.hasData) {
+              final product = snapshot.data!;
+              return CustomScrollView(
+                slivers: [
+                  SliverAppBar(
+                    expandedHeight: 200.0,
+                    //   floating: false,
+                    flexibleSpace: FlexibleSpaceBar(
+                      background: Image.asset(
+                        product.imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Center(
+                            child: Icon(
+                              Icons.error,
+                              color: Colors.red,
+                              size: 50,
                             ),
                           );
-                        }).toList(),
-
-                        //frequently bought together///
-                        const SizedBox(height: 20),
-                        FrequentlyBoughtTogetherSection(
-                          product: product,
-                        ),
-                        const SizedBox(height: 10),
-                        Divider(
-                          color: MyColors.grey,
-                        ),
-                        const SizedBox(height: 10),
-
-                        /// special instruction textfield
-                        SpecialInstructionSection(),
-                        SizedBox(
-                          height: 20,
-                        ),
-
-                        ///remove from my order section
-                        RemoveFromOrderSection(),
-                        SizedBox(
-                          height: 20,
-                        )
-                      ],
+                        },
+                      ),
+                    ),
+                    leading: Container(
+                      margin: EdgeInsets.all(12),
+                      child: CustomCancelButton(
+                        size: 45, // Adjust the size as needed
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            );
-          } else {
-            return const Center(child: Text('No product data available'));
-          }
-        },
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ProductTitleSection(product: product),
+                          const SizedBox(height: 15),
+                          // Dynamically add SelectMenuSection widgets
+                          ...product.variations.map((variation) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 15),
+                              child: SelectMenuSection(
+                                product: product,
+                                variation: variation,
+                                onSelectionChanged: _onSelectionChanged,
+                              ),
+                            );
+                          }).toList(),
+
+                          //frequently bought together///
+                          FrequentlyBoughtTogetherSection(
+                            product: product,
+                          ),
+                          const SizedBox(height: 10),
+                          Divider(
+                            color: MyColors.lightGrey,
+                          ),
+                          const SizedBox(height: 10),
+
+                          /// special instruction textfield
+                          SpecialInstructionSection(),
+                          SizedBox(
+                            height: 40,
+                          ),
+
+                          ///remove from my order section
+                          RemoveFromOrderSection(),
+                          SizedBox(
+                            height: 20,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return const Center(child: Text('No product data available'));
+            }
+          },
+        ),
       ),
       bottomNavigationBar: ClipRRect(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: MyColors.grey),
-          ),
-          child: BottomAppBar(
-            height: 95,
-            child: Container(
+        child: Stack(
+          children: [
+            Container(
+              height: 80,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
+                color: MyColors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+                border: Border.all(
+                  color: MyColors.lightGrey,
+                ),
               ),
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
+            ),
+            BottomAppBar(
+              color: Colors
+                  .transparent, // Make it transparent to see the background container
+              child: Container(
+                height: 85,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      height: 32,
+                      width: 32,
+                      decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(100),
-                        color: MyColors.grey),
-                    child: IconButton(
-                      onPressed: _decrementQuantity,
-                      icon: Icon(
-                        Icons.remove,
-                        color: MyColors.white,
+                        color: _quantity > 1 ? MyColors.primary : MyColors.grey,
                       ),
-                    ),
-                  ),
-                  Text(
-                    '$_quantity',
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: MyColors.primary),
-                    child: IconButton(
-                      onPressed: _incrementQuantity,
-                      icon: Icon(Icons.add),
-                    ),
-                  ),
-                  Container(
-                    width: 180,
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: MyColors.grey,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Add to Cart',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
+                      child: IconButton(
+                        padding: EdgeInsets.all(0), // Remove any padding
+                        onPressed: _decrementQuantity,
+                        icon: Icon(
+                          Icons.remove,
+                          color: MyColors.white,
+                          size: 22,
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    Text(
+                      '$_quantity',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    Container(
+                      height: 32,
+                      width: 32,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: MyColors.primary,
+                      ),
+                      child: IconButton(
+                        padding: EdgeInsets.all(0), // Remove any padding
+                        onPressed: _incrementQuantity,
+                        icon: Icon(
+                          Icons.add,
+                          size: 22,
+                          color: MyColors.white,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 170,
+                      height: 48,
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: _isOptionSelected
+                            ? MyColors.primary
+                            : MyColors.grey,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Add to cart',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );

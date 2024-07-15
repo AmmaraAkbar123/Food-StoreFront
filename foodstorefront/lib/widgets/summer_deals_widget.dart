@@ -49,12 +49,15 @@ class _SummerDealsWidgetState extends State<SummerDealsWidget> {
                   children: [
                     Padding(
                       padding:
-                          const EdgeInsets.only(top: 10, left: 10, right: 10),
+                          const EdgeInsets.only(top: 30, left: 10, right: 10),
                       child: const Text(
                         "Summer Deals",
                         style: TextStyle(
                             fontSize: 22, fontWeight: FontWeight.bold),
                       ),
+                    ),
+                    SizedBox(
+                      height: 8,
                     ),
                     Column(
                       children: List.generate(deals.length, (index) {

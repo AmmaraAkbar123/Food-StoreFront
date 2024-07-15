@@ -35,7 +35,7 @@ class ProductTitleSection extends StatelessWidget {
                 Text(
                   'Rs. ${product.price.toStringAsFixed(2)}',
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: MyColors.black,
                   ),
@@ -44,10 +44,14 @@ class ProductTitleSection extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         Text(
           product.description,
-          style: const TextStyle(fontSize: 16, color: Colors.grey),
+          style: const TextStyle(
+              height: 1.1,
+              fontSize: 13,
+              color: MyColors.greyText,
+              fontWeight: FontWeight.w400),
         ),
         const SizedBox(height: 8),
         Divider(

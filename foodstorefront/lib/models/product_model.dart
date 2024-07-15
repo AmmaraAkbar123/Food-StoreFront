@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:foodstorefront/utils/images_strings.dart';
 
 class Product {
@@ -97,6 +96,26 @@ Future<List<Product>> fetchProducts() async {
     ),
     Product(
       id: '4',
+      name: 'Ice Cream',
+      imageUrl: ImagesStrings.burgerimage2,
+      description: 'Vanilla ice cream with chocolate syrup',
+      price: 80,
+      variations: [],
+      frequentlyBoughtTogether: [],
+      oldPrice: 90,
+    ),
+    Product(
+      id: '5',
+      name: 'Ice Cream',
+      imageUrl: ImagesStrings.burgerimage2,
+      description: 'Vanilla ice cream with chocolate syrup',
+      price: 80,
+      variations: [],
+      frequentlyBoughtTogether: [],
+      oldPrice: 90,
+    ),
+    Product(
+      id: '6',
       name: 'Ice Cream',
       imageUrl: ImagesStrings.burgerimage2,
       description: 'Vanilla ice cream with chocolate syrup',

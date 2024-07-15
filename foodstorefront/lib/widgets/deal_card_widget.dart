@@ -48,7 +48,8 @@ class DealCard extends StatelessWidget {
                   style: const TextStyle(
                       fontSize: 12,
                       overflow: TextOverflow.clip,
-                      color: MyColors.greyText),
+                      color: MyColors.greyText,
+                      fontWeight: FontWeight.w500),
                   maxLines: 2,
                 ),
                 if (product.isPopular)
@@ -72,6 +73,9 @@ class DealCard extends StatelessWidget {
                   ),
               ],
             ),
+          ),
+          SizedBox(
+            width: 4,
           ),
           Expanded(
             flex: 1,

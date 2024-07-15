@@ -14,14 +14,14 @@ class CustomCancelButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: size,
-      height: size,
+    
       decoration: BoxDecoration(
         color: MyColors.white,
         borderRadius: BorderRadius.circular(100),
       ),
       child: Center(
         child: IconButton(
+          padding: EdgeInsets.all(0),
           icon: Icon(
             Icons.close,
             color: MyColors.primary,

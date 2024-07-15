@@ -35,7 +35,7 @@ class _FrequentlyBoughtTogetherSectionState
             ),
             RequiredOptionalButton(
               text: 'Optional',
-              color: MyColors.grey,
+              color: MyColors.grey2,
               txtColor: MyColors.greyText,
             ),
           ],
@@ -92,7 +92,7 @@ class _FrequentlyBoughtTogetherSectionState
                               child: isSelected
                                   ? Center(
                                       child: Icon(Icons.check,
-                                          color: MyColors.white))
+                                          size: 12, color: MyColors.white))
                                   : null,
                             ),
                             SizedBox(width: 10),

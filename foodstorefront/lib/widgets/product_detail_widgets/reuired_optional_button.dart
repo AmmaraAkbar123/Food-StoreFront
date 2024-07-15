@@ -15,7 +15,7 @@ class RequiredOptionalButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(20),
@@ -24,7 +24,7 @@ class RequiredOptionalButton extends StatelessWidget {
         text,
         style: TextStyle(
           color: txtColor,
-          fontWeight: FontWeight.w500,
+          fontWeight: FontWeight.bold,
           fontSize: 12,
         ),
       ),

@@ -52,9 +52,9 @@ class _StoreScreenState extends State<StoreScreen> {
             statusBarColor: Colors.white,
           ),
           title: _isAppBarExpanded
-              ? Column(
+              ? const Column(
                   children: [
-                    const Text(
+                    Text(
                       "Delivery",
                       style: TextStyle(
                           color: MyColors.black,
@@ -81,7 +81,7 @@ class _StoreScreenState extends State<StoreScreen> {
             )
           ],
         ),
-        drawer: Drawer(),
+        drawer: const Drawer(),
         body: Consumer<CategoryProvider>(
           builder: (context, categoryProvider, child) {
             return NotificationListener<ScrollNotification>(
@@ -124,13 +124,13 @@ class _StoreScreenState extends State<StoreScreen> {
                               ],
                             ),
                             const SizedBox(height: 20),
-                            MoreInfo(),
+                            const MoreInfo(),
                             const SizedBox(height: 15),
-                            SeeReviews(),
+                            const SeeReviews(),
                             const SizedBox(height: 10),
-                            DeliveryInfo(),
+                            const DeliveryInfo(),
                             const SizedBox(height: 15),
-                            AvailableDeals(),
+                            const AvailableDeals(),
                           ],
                         ),
                       ),
@@ -139,9 +139,10 @@ class _StoreScreenState extends State<StoreScreen> {
                       pinned: true,
                       delegate: _SliverAppBarDelegate(
                         TabBar(
-                          labelStyle: TextStyle(
+                          tabAlignment: TabAlignment.start,
+                          isScrollable: true,
+                          labelStyle: const TextStyle(
                               fontWeight: FontWeight.w600, fontSize: 13),
-                          labelPadding: EdgeInsets.only(left: 3, right: 3),
                           indicatorColor: MyColors.primary,
                           labelColor: MyColors.primary,
                           unselectedLabelColor: MyColors.black,
@@ -157,19 +158,19 @@ class _StoreScreenState extends State<StoreScreen> {
                   children: categoryProvider.categories.map((category) {
                     switch (category.id) {
                       case '1':
-                        return PopularContentWidget(
+                        return const PopularContentWidget(
                             apiEndpoint: 'popular', title: 'Popular');
                       case '2':
-                        return SummerDealsWidget();
+                        return const SummerDealsWidget();
                       case '3':
                         return FavoriteScreen(
                           reviews: reviews,
                         );
                       case '4':
-                        return PopularContentWidget(
+                        return const PopularContentWidget(
                             apiEndpoint: 'new_arrivals', title: 'New Arrivals');
                       default:
-                        return Center(child: Text('Unknown category'));
+                        return const Center(child: Text('Unknown category'));
                     }
                   }).toList(),
                 ),
