@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:foodstorefront/models/review_model.dart';
 import 'package:foodstorefront/provider/category_provider.dart';
-import 'package:foodstorefront/screens/favorite_screen.dart';
-import 'package:foodstorefront/screens/popular_deal_screen.dart';
 import 'package:foodstorefront/utils/colors.dart';
 import 'package:foodstorefront/utils/images_strings.dart';
 import 'package:foodstorefront/widgets/delivery_info_widget.dart';
 import 'package:foodstorefront/widgets/discount_offtag_widgets.dart';
 import 'package:foodstorefront/widgets/more_info_text_widget.dart';
 import 'package:foodstorefront/widgets/see_reviews_widget.dart';
-import 'package:foodstorefront/widgets/summer_deals_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:rect_getter/rect_getter.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});
@@ -20,26 +18,96 @@ class StoreScreen extends StatefulWidget {
   _StoreScreenState createState() => _StoreScreenState();
 }
 
-class _StoreScreenState extends State<StoreScreen> {
-  bool _isAppBarExpanded = false;
-  late ScrollController _scrollController;
+class _StoreScreenState extends State<StoreScreen>
+    with SingleTickerProviderStateMixin {
+  bool isAppBarExpanded = false;
+  bool isCollapsed = false;
+  late AutoScrollController scrollController;
+  late TabController tabController;
+
+  final double expandedHeight = 500.0;
+  final double collapsedHeight = kToolbarHeight;
+
+  final listViewKey = RectGetter.createGlobalKey();
+  Map<int, GlobalKey<RectGetterState>> itemKeys =
+      {}; // Updated to use GlobalKey<RectGetterState>
+
+  bool pauseRectGetterIndex = false;
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
+    final categoryProvider = context.read<CategoryProvider>();
+    tabController = TabController(
+      length: categoryProvider.categories.length,
+      vsync: this,
+    )..addListener(() {
+        if (!tabController.indexIsChanging) {
+          animateAndScrollTo(tabController.index);
+        }
+      });
+    scrollController = AutoScrollController();
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    scrollController.dispose();
+    tabController.dispose();
     super.dispose();
+  }
+
+  List<int> getVisibleItemsIndex() {
+    Rect? rect = RectGetter.getRectFromKey(listViewKey);
+    List<int> items = [];
+    if (rect == null) return items;
+    itemKeys.forEach((index, key) {
+      Rect? itemRect = RectGetter.getRectFromKey(key);
+      if (itemRect == null) return;
+      if (itemRect.top > rect.bottom) return;
+      if (itemRect.bottom < rect.top) return;
+      items.add(index);
+    });
+    return items;
+  }
+
+  void onCollapsed(bool value) {
+    if (this.isCollapsed == value) return;
+    setState(() => this.isCollapsed = value);
+  }
+
+  bool onScrollNotification(ScrollNotification notification) {
+    if (pauseRectGetterIndex) return true;
+    if (notification is ScrollUpdateNotification) {
+      final categoryProvider = context.read<CategoryProvider>();
+      List<int> visibleItems = getVisibleItemsIndex();
+
+      if (visibleItems.isNotEmpty) {
+        int middleIndex =
+            visibleItems.reduce((value, element) => value + element) ~/
+                visibleItems.length;
+        if (tabController.index != middleIndex) {
+          tabController.animateTo(middleIndex);
+        }
+      }
+
+      setState(() {
+        isAppBarExpanded = notification.metrics.pixels > 200;
+      });
+    }
+    return true;
+  }
+
+  void animateAndScrollTo(int index) {
+    pauseRectGetterIndex = true;
+    scrollController
+        .scrollToIndex(index, preferPosition: AutoScrollPosition.begin)
+        .then((_) => pauseRectGetterIndex = false);
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: context.read<CategoryProvider>().categories.length,
+      length: context.watch<CategoryProvider>().categories.length,
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -51,7 +119,7 @@ class _StoreScreenState extends State<StoreScreen> {
             statusBarIconBrightness: Brightness.dark,
             statusBarColor: Colors.white,
           ),
-          title: _isAppBarExpanded
+          title: isAppBarExpanded
               ? const Column(
                   children: [
                     Text(
@@ -85,14 +153,7 @@ class _StoreScreenState extends State<StoreScreen> {
         body: Consumer<CategoryProvider>(
           builder: (context, categoryProvider, child) {
             return NotificationListener<ScrollNotification>(
-              onNotification: (scrollNotification) {
-                if (scrollNotification is ScrollUpdateNotification) {
-                  setState(() {
-                    _isAppBarExpanded = scrollNotification.metrics.pixels > 200;
-                  });
-                }
-                return true;
-              },
+              onNotification: onScrollNotification,
               child: NestedScrollView(
                 headerSliverBuilder:
                     (BuildContext context, bool innerBoxIsScrolled) {
@@ -139,6 +200,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       pinned: true,
                       delegate: _SliverAppBarDelegate(
                         TabBar(
+                          controller: tabController,
                           tabAlignment: TabAlignment.start,
                           isScrollable: true,
                           labelStyle: const TextStyle(
@@ -154,25 +216,43 @@ class _StoreScreenState extends State<StoreScreen> {
                     ),
                   ];
                 },
-                body: TabBarView(
-                  children: categoryProvider.categories.map((category) {
-                    switch (category.id) {
-                      case '1':
-                        return const PopularContentWidget(
-                            apiEndpoint: 'popular', title: 'Popular');
-                      case '2':
-                        return const SummerDealsWidget();
-                      case '3':
-                        return FavoriteScreen(
-                          reviews: reviews,
-                        );
-                      case '4':
-                        return const PopularContentWidget(
-                            apiEndpoint: 'new_arrivals', title: 'New Arrivals');
-                      default:
-                        return const Center(child: Text('Unknown category'));
-                    }
-                  }).toList(),
+                body: ListView.builder(
+                  key: listViewKey,
+                  itemCount: categoryProvider.categories.length,
+                  itemBuilder: (context, index) {
+                    final category = categoryProvider.categories[index];
+                    return AutoScrollTag(
+                      key: ValueKey(index),
+                      controller: scrollController,
+                      index: index,
+                      child: Container(
+                        key: itemKeys[index] = GlobalKey<
+                            RectGetterState>(), // Use GlobalKey<RectGetterState>
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              category.title,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: MyColors.black,
+                              ),
+                            ),
+                            ...category.foods.map((food) {
+                              return ListTile(
+                                leading: Image.network(food.imageUrl),
+                                title: Text(food.name),
+                                subtitle: Text('Rs.${food.price}'),
+                                trailing: Text(food.comparePrice),
+                              );
+                            }).toList(),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             );
@@ -184,9 +264,9 @@ class _StoreScreenState extends State<StoreScreen> {
 }
 
 class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  _SliverAppBarDelegate(this._tabBar);
-
   final TabBar _tabBar;
+
+  _SliverAppBarDelegate(this._tabBar);
 
   @override
   double get minExtent => _tabBar.preferredSize.height;
@@ -197,13 +277,13 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   Widget build(
       BuildContext context, double shrinkOffset, bool overlapsContent) {
     return Container(
-      color: MyColors.white,
+      color: Colors.white,
       child: _tabBar,
     );
   }
 
   @override
   bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
-    return false;
+    return _tabBar != oldDelegate._tabBar;
   }
 }
